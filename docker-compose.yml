@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend    # Path to the backend directory containing your Dockerfile
+    ports:
+      - "3000:3000"
+    container_name: node_container         # Map the container's port 3000 to the host's port 3000
+    volumes:
+      - ./backend:/usr/src/app   # Mount the backend directory into the container
+    environment:
+      - MONGODB_URI=mongodb://database:27017/mydatabase   # MongoDB connection string
+    depends_on:
+      - database             # MongoDB database service
+
+  frontend:
+    build:
+      context: ./frontend   # Path to the frontend directory containing your React app
+    container_name: react_container
+    ports:
+      - "3003:3003"             # Map the container's port 80 to the host's port 80
+    depends_on:
+      - backend
+
+  database:
+    image: mongo:latest     # Official MongoDB image
+    ports:
+      - "27017:27017"       # Map the container's port 27017 to the host's port 27017
+    volumes:
+      - ./mongo-data:/data/db   # Persist MongoDB data
